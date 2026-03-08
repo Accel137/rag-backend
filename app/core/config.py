@@ -16,9 +16,18 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 60
 
-    openai_api_key: str = ""
+    openai_api_key: str
+    qwen_api_key: str
+    qwen_base_url: str
 
-    model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
+    model_config = SettingsConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
+    )
 
 
 settings = Settings()
+
+print("QWEN_BASE_URL =", settings.qwen_base_url)
+print("QWEN_API_KEY masked =", settings.qwen_api_key[:8], settings.qwen_api_key[-4:])
