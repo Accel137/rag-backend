@@ -77,7 +77,7 @@ class ChatService:
             if event.type == "text_delta":
                 payload = {
                     "type": "text_delta",
-                    "delta": event.text or "",
+                    "text": event.text or "",
                     "done": False,
                     "finish_reason": None,
                 }
@@ -86,7 +86,7 @@ class ChatService:
             elif event.type == "completed":
                 payload = {
                     "type": "completed",
-                    "delta": "",
+                    "text": "",
                     "done": True,
                     "finish_reason": event.finish_reason,
                 }

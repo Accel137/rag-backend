@@ -1,7 +1,7 @@
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic import BaseModel
 
-
-class Settings(BaseSettings):
+class APPSettings(BaseSettings):
     app_name: str = "rag-backend"
     app_env: str = "dev"
     debug: bool = True
@@ -9,17 +9,35 @@ class Settings(BaseSettings):
     host: str = "0.0.0.0"
     port: int = 8000
 
-    database_url: str = "postgresql+psycopg://postgres:postgres@localhost:5432/rag_backend"
-    redis_url: str = "redis://localhost:6379/0"
-
     jwt_secret_key: str = "change_me"
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 60
 
+
+
+class DBSettings(BaseSettings):
+    database_url: str
+    redis_url: str
+
+
+class LLMSettings(BaseSettings):
     openai_api_key: str
     qwen_api_key: str
     qwen_base_url: str
 
+
+class RAGSettings(BaseSettings):
+    chunk_provider: str = "simple"
+    chunk_size: int = 500
+    chunk_overlap: int = 100
+
+    embedding_provider: str = "mock"
+    embedding_model: str = "mock"
+
+    openai_api_key: str
+
+
+class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
         env_file_encoding="utf-8",
@@ -27,7 +45,38 @@ class Settings(BaseSettings):
     )
 
 
-settings = Settings()
+    database_url: str
+    redis_url: str
 
-print("QWEN_BASE_URL =", settings.qwen_base_url)
-print("QWEN_API_KEY masked =", settings.qwen_api_key[:8], settings.qwen_api_key[-4:])
+    openai_api_key: str
+    qwen_api_key: str
+    qwen_base_url: str
+
+    @property
+
+    def app(self) -> APPSettings:
+        return APPSettings()
+
+
+    @property
+    def db(self) -> DBSettings:
+        return DBSettings(
+            database_url=self.database_url, 
+            redis_url=self.redis_url
+        )
+    
+    @property
+    def llm(self) -> LLMSettings:
+        return LLMSettings(
+            openai_api_key=self.openai_api_key,
+            qwen_api_key=self.qwen_api_key,
+            qwen_base_url=self.qwen_base_url
+        )
+    
+    @property
+    def rag(self) -> RAGSettings:
+        return RAGSettings(
+            openai_api_key=self.openai_api_key
+        )
+
+settings = Settings()

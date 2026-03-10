@@ -70,3 +70,5 @@ tenacity>=8.5.0
 # Logging
 # =========================
 structlog>=24.1.0
+
+langchain-text-splitters >= 0.2     
