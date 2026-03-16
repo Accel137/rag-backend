@@ -27,12 +27,21 @@ class LLMSettings(BaseSettings):
 
 
 class RAGSettings(BaseSettings):
+    # simple, langchaian
     chunk_provider: str = "simple"
     chunk_size: int = 500
     chunk_overlap: int = 100
 
+    # mock, openai
     embedding_provider: str = "mock"
+
+
+    # mock: mock
+    # openai: text-embedding-3-small
     embedding_model: str = "mock"
+
+    # memory
+    vector_store_provider: str = "memory"
 
     openai_api_key: str
 
@@ -76,6 +85,12 @@ class Settings(BaseSettings):
     @property
     def rag(self) -> RAGSettings:
         return RAGSettings(
+            chunk_provider="simple",
+            chunk_size=500,
+            chunk_overlap=100,
+            embedding_provider="mock",
+            embedding_model="mock",
+            vector_store_provider="memory",
             openai_api_key=self.openai_api_key
         )
 

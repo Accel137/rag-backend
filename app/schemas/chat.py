@@ -1,6 +1,6 @@
 from typing import Literal
-from pydantic import BaseModel
-
+from pydantic import BaseModel 
+from typing import Optional
 
 class ChatMessage(BaseModel):
     role: Literal["system", "user", "assistant"]
@@ -13,6 +13,7 @@ class ChatRequest(BaseModel):
     messages: list[ChatMessage]
     temperature: float | None = 0.7
     max_tokens: int | None = None
+    knowledge_base_id: Optional[str] = None
 
 
 class ChatOutputText(BaseModel):

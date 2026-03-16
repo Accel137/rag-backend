@@ -1,9 +1,10 @@
+from typing import Any
+
 from pydantic import BaseModel, Field
-from typing import Optional, Dict
 
 class DocumentMetadata(BaseModel):
     document_id: str
-    source: str
+    source: str | None = None
     title: str | None = None
     knowledge_base_id: str | None = None
     tags: list[str] = Field(default_factory=list)
@@ -25,14 +26,14 @@ class DocumentChunk(BaseModel):
 class IngestRequest(BaseModel):
     document_id: str
     text: str
-    metadata: Dict[str, str] = {}
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class RetrievedChunk(BaseModel):
     id: str
     text: str
     score: float
-    metadata: Dict[str, str] = {}
+    metadata: dict[str, Any] = Field(default_factory=dict)
 
 
 class RAGQuery(BaseModel):
@@ -45,4 +46,7 @@ class RAGResponse(BaseModel):
     chunks: list[RetrievedChunk]
 
 
-
+class RAGStrategy(BaseModel):
+    retriever_name: str
+    prompt_name: str
+    top_k: int = 5

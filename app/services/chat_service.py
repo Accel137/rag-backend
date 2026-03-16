@@ -9,16 +9,30 @@ from app.llm.schemas import (
     LLMResponse,
 )
 from app.llm.service import LLMService
+from app.rag.pipeline import RAGPipeline
+from app.rag.strategy import StrategyPipeline
 
 
 class ChatService:
-    def __init__(self, llm_service: LLMService):
+    def __init__(
+        self,
+        llm_service: LLMService,
+        rag_pipeline: RAGPipeline,
+        strategy_pipeline: StrategyPipeline,
+    ):
         self.llm_service = llm_service
+        self.rag_pipeline = rag_pipeline
+        self.strategy_pipeline = strategy_pipeline
 
-    def _build_llm_request(self, req: ChatRequest) -> LLMRequest:
+    def _build_llm_request(
+        self,
+        req: ChatRequest,
+        messages: list[LLMMessage] | None = None,
+    ) -> LLMRequest:
         return LLMRequest(
             model=req.model,
-            messages=[
+            messages=messages
+            or [
                 LLMMessage(
                     role=msg.role,
                     content=[TextContentBlock(text=msg.content)],
@@ -27,6 +41,37 @@ class ChatService:
             ],
             temperature=req.temperature,
             max_tokens=req.max_tokens,
+        )
+
+    def _build_messages_for_request(self, req: ChatRequest) -> list[LLMMessage]:
+        if not req.knowledge_base_id:
+            return [
+                LLMMessage(
+                    role=msg.role,
+                    content=[TextContentBlock(text=msg.content)],
+                )
+                for msg in req.messages
+            ]
+
+        plan = self.strategy_pipeline.decide(req.messages)
+        if not plan.query:
+            return [
+                LLMMessage(
+                    role=msg.role,
+                    content=[TextContentBlock(text=msg.content)],
+                )
+                for msg in req.messages
+            ]
+
+        chunks = self.rag_pipeline.retrieve(
+            query=plan.query,
+            strategy=plan.strategy,
+            filters={"knowledge_base_id": req.knowledge_base_id},
+        )
+        return self.rag_pipeline.build_messages(
+            query=plan.query,
+            strategy=plan.strategy,
+            chunks=chunks,
         )
 
     @staticmethod
@@ -38,7 +83,8 @@ class ChatService:
         )
 
     async def chat(self, req: ChatRequest) -> ChatResponse:
-        llm_req = self._build_llm_request(req)
+        messages = self._build_messages_for_request(req)
+        llm_req = self._build_llm_request(req, messages=messages)
         llm_resp: LLMResponse = await self.llm_service.generate(
             request=llm_req,
             provider_name=req.provider,
@@ -68,7 +114,8 @@ class ChatService:
         )
 
     async def stream_chat(self, req: ChatRequest) -> AsyncIterator[str]:
-        llm_req = self._build_llm_request(req)
+        messages = self._build_messages_for_request(req)
+        llm_req = self._build_llm_request(req, messages=messages)
 
         async for event in self.llm_service.stream_generate(
             request=llm_req,

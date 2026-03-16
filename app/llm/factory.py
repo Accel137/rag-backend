@@ -24,13 +24,6 @@ def build_llm_registry(config: LLMSettings) -> LLMProviderRegistry:
             )
         )
 
-    # if settings.CLAUDE_API_KEY:
-    #     registry.register(
-    #         ClaudeProvider(
-    #             api_key=settings.CLAUDE_API_KEY,
-    #         )
-    #     )
-
     return registry
 
 
