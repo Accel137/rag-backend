@@ -15,9 +15,9 @@ class StrategyPipeline:
         self._rewriter = rewriter or DefaultRewriter()
         self._router = router or DefaultRouter()
 
-    def decide(self, messages: list[ChatMessage]) -> RAGPlan:
-        query = self._rewriter.rewrite(messages) or ""
+    async def decide(self, messages: list[ChatMessage]) -> RAGPlan:
+        query = await self._rewriter.rewrite(messages) or ""
         return RAGPlan(
             query=query,
-            strategy=self._router.route(query),
+            strategy=await self._router.route(query),
         )

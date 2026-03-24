@@ -9,10 +9,10 @@ class MockEmbedder(BaseEmbedder):
     def __init__(self, dim: int = 8):
         self.dim = dim
 
-    def embed_texts(self, texts: list[str]) -> list[list[float]]:
+    async def embed_texts(self, texts: list[str]) -> list[list[float]]:
         return [self._fake_vector(text) for text in texts]
 
-    def embed_query(self, query: str) -> list[float]:
+    async def embed_query(self, query: str) -> list[float]:
         return self._fake_vector(query)
 
     def _fake_vector(self, text: str) -> list[float]:

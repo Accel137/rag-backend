@@ -7,5 +7,5 @@ from app.rag.schemas import RAGStrategy
 
 class BaseRouter(ABC):
     @abstractmethod
-    def route(self, query: str) -> RAGStrategy:
+    async def route(self, query: str) -> RAGStrategy:
         raise NotImplementedError

@@ -16,7 +16,7 @@ class RAGPipeline:
 
     
 
-    def retrieve(
+    async def retrieve(
         self,
         query: str,
         strategy: RAGStrategy,
@@ -24,7 +24,7 @@ class RAGPipeline:
     ) -> list[RetrievedChunk]:
         retriever = self.retriever_registry.get(strategy.retriever_name)
 
-        chunks = retriever.retrieve(
+        chunks = await retriever.retrieve(
             query=query,
             top_k=strategy.top_k,
             filters=filters,

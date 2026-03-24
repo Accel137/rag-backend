@@ -5,7 +5,7 @@ from app.schemas.chat import ChatMessage
 
 
 class DefaultRewriter(BaseRewriter):
-    def rewrite(self, messages: list[ChatMessage]) -> str | None:
+    async def rewrite(self, messages: list[ChatMessage]) -> str | None:
         for message in reversed(messages):
             if message.role == "user":
                 content = message.content.strip()

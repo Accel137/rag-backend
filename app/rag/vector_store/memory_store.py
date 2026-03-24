@@ -17,7 +17,7 @@ class InMemoryVectorStore(BaseVectorStore):
     def __init__(self) -> None:
         self._records: list[StoredVectorRecord] = []
 
-    def add(
+    async def add(
         self,
         chunks: list[DocumentChunk],
         vectors: list[list[float]],
@@ -28,7 +28,7 @@ class InMemoryVectorStore(BaseVectorStore):
         for chunk, vector in zip(chunks, vectors):
             self._records.append(StoredVectorRecord(chunk=chunk, vector=vector))
 
-    def search(
+    async def search(
         self,
         query_vector: list[float],
         top_k: int = 5,
@@ -63,7 +63,7 @@ class InMemoryVectorStore(BaseVectorStore):
             for score, record in scored_records[:top_k]
         ]
 
-    def delete_by_document_id(self, document_id: str) -> int:
+    async def delete_by_document_id(self, document_id: str) -> int:
         original_count = len(self._records)
         self._records = [
             record
@@ -106,3 +106,4 @@ class InMemoryVectorStore(BaseVectorStore):
             return 0.0
 
         return dot / (norm1 * norm2)
+

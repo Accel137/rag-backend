@@ -17,7 +17,7 @@ class Ingestor:
         self.embedder = embedder
         self.vector_store = vector_store
 
-    def ingest(self, request: IngestRequest) -> list[DocumentChunk]:
+    async def ingest(self, request: IngestRequest) -> list[DocumentChunk]:
         metadata_payload = dict(request.metadata)
         metadata_payload.pop("document_id", None)
         metadata = DocumentMetadata(
@@ -29,6 +29,6 @@ class Ingestor:
         if not chunks:
             return []
 
-        vectors = self.embedder.embed_texts([chunk.text for chunk in chunks])
-        self.vector_store.add(chunks, vectors)
+        vectors = await self.embedder.embed_texts([chunk.text for chunk in chunks])
+        await self.vector_store.add(chunks, vectors)
         return chunks

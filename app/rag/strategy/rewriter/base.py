@@ -7,5 +7,5 @@ from app.schemas.chat import ChatMessage
 
 class BaseRewriter(ABC):
     @abstractmethod
-    def rewrite(self, messages: list[ChatMessage]) -> str | None:
+    async def rewrite(self, messages: list[ChatMessage]) -> str | None:
         raise NotImplementedError

@@ -5,11 +5,11 @@ from abc import ABC, abstractmethod
 
 class BaseEmbedder(ABC):
     @abstractmethod
-    def embed_texts(self, texts: list[str]) -> list[list[float]]:
+    async def embed_texts(self, texts: list[str]) -> list[list[float]]:
         raise NotImplementedError
 
     @abstractmethod
-    def embed_query(self, query: str) -> list[float]:
+    async def embed_query(self, query: str) -> list[float]:
         raise NotImplementedError
     
     @property

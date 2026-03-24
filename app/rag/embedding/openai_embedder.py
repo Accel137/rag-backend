@@ -1,4 +1,4 @@
-from openai import OpenAI
+from openai import AsyncOpenAI
 
 from app.rag.embedding import BaseEmbedder
 
@@ -10,7 +10,7 @@ class OpenAIEmbedder(BaseEmbedder):
         api_key: str,
         model: str = "text-embedding-3-small",
     ):
-        self.client = OpenAI(api_key=api_key)
+        self.client = AsyncOpenAI(api_key=api_key)
         self.model = model
 
         # 预设维度（也可以写成字典映射）
@@ -25,19 +25,19 @@ class OpenAIEmbedder(BaseEmbedder):
     def dimension(self) -> int:
         return self._dimension
 
-    def embed_texts(self, texts: list[str]) -> list[list[float]]:
+    async def embed_texts(self, texts: list[str]) -> list[list[float]]:
         if not texts:
             return []
 
-        response = self.client.embeddings.create(
+        response = await self.client.embeddings.create(
             model=self.model,
             input=texts,
         )
 
         return [item.embedding for item in response.data]
 
-    def embed_query(self, query: str) -> list[float]:
-        response = self.client.embeddings.create(
+    async def embed_query(self, query: str) -> list[float]:
+        response = await self.client.embeddings.create(
             model=self.model,
             input=[query],
         )

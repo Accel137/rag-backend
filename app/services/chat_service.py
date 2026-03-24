@@ -43,7 +43,7 @@ class ChatService:
             max_tokens=req.max_tokens,
         )
 
-    def _build_messages_for_request(self, req: ChatRequest) -> list[LLMMessage]:
+    async def _build_messages_for_request(self, req: ChatRequest) -> list[LLMMessage]:
         if not req.knowledge_base_id:
             return [
                 LLMMessage(
@@ -53,7 +53,7 @@ class ChatService:
                 for msg in req.messages
             ]
 
-        plan = self.strategy_pipeline.decide(req.messages)
+        plan = await self.strategy_pipeline.decide(req.messages)
         if not plan.query:
             return [
                 LLMMessage(
@@ -63,7 +63,7 @@ class ChatService:
                 for msg in req.messages
             ]
 
-        chunks = self.rag_pipeline.retrieve(
+        chunks = await self.rag_pipeline.retrieve(
             query=plan.query,
             strategy=plan.strategy,
             filters={"knowledge_base_id": req.knowledge_base_id},
@@ -83,7 +83,7 @@ class ChatService:
         )
 
     async def chat(self, req: ChatRequest) -> ChatResponse:
-        messages = self._build_messages_for_request(req)
+        messages = await self._build_messages_for_request(req)
         llm_req = self._build_llm_request(req, messages=messages)
         llm_resp: LLMResponse = await self.llm_service.generate(
             request=llm_req,
@@ -114,7 +114,7 @@ class ChatService:
         )
 
     async def stream_chat(self, req: ChatRequest) -> AsyncIterator[str]:
-        messages = self._build_messages_for_request(req)
+        messages = await self._build_messages_for_request(req)
         llm_req = self._build_llm_request(req, messages=messages)
 
         async for event in self.llm_service.stream_generate(

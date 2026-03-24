@@ -16,7 +16,7 @@ class VectorRetriever(BaseRetriever):
         self.embedder = embedder
         self.vector_store = vector_store
 
-    def retrieve(
+    async def retrieve(
         self,
         query: str,
         top_k: int = 5,
@@ -26,8 +26,8 @@ class VectorRetriever(BaseRetriever):
         if not query:
             return []
 
-        query_vector = self.embedder.embed_query(query)
-        return self.vector_store.search(
+        query_vector = await self.embedder.embed_query(query)
+        return await self.vector_store.search(
             query_vector=query_vector,
             top_k=top_k,
             filters=filters,

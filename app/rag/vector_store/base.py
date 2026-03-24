@@ -7,7 +7,7 @@ from app.rag.schemas import DocumentChunk, RetrievedChunk
 
 class BaseVectorStore(ABC):
     @abstractmethod
-    def add(
+    async def add(
         self,
         chunks: list[DocumentChunk],
         vectors: list[list[float]],
@@ -15,7 +15,7 @@ class BaseVectorStore(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def search(
+    async def search(
         self,
         query_vector: list[float],
         top_k: int = 5,
@@ -24,6 +24,7 @@ class BaseVectorStore(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def delete_by_document_id(self, document_id: str) -> int:
+    async def delete_by_document_id(self, document_id: str) -> int:
         raise NotImplementedError
+
 
