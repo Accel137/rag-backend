@@ -10,7 +10,8 @@ class ChatMessage(BaseModel):
 class ChatRequest(BaseModel):
     provider: str
     model: str
-    messages: list[ChatMessage]
+    message: str
+    conversation_id: str | None = None
     temperature: float | None = 0.7
     max_tokens: int | None = None
     knowledge_base_id: Optional[str] = None
@@ -28,6 +29,7 @@ class ChatUsage(BaseModel):
 
 
 class ChatResponse(BaseModel):
+    conversation_id: str
     content: str
     output: list[ChatOutputText]
     model: str
